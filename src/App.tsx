@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-
+import { useSelector, useDispatch } from 'react-redux'
+import * as todoActions from './store/modules/todo/actions';
 function App() {
+  const dispatch = useDispatch()
+  const state = useSelector(state => {
+    return {
+      todos: state.todos.todos,
+      loading: state.todos.loading
+    }
+  })
+  const fetchTodos = useCallback(() => {
+    dispatch(todoActions.fetchTodos.request())
+  },[dispatch])
+  useEffect(()=>{
+    fetchTodos()
+  },[fetchTodos])
+  const todoVNodes = state.todos.map(t => (
+    <li key={t.id}>
+      {t.id}
+      <br />
+      {t.email}
+      <br />
+      {t.realName}
+    </li>
+  ))
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={fetchTodos}>获取todos</button>
+      {state.loading ? (<p>loading</p>) : todoVNodes}
+      
     </div>
   );
 }
